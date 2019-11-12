@@ -3,18 +3,13 @@ package Controllers;
 import Server.Main;
 import org.json.simple.JSONArray;
 import org.sqlite.SQLiteConfig;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Scanner;
 
-
-@Path("users/")
 public class Users{
+    //@Path("users/")
     public static void openUsers(String dbFile){ //Function to open the database.
         try{
             Class.forName("org.sqlite.JDBC"); //Loads the database driver.
@@ -25,58 +20,78 @@ public class Users{
         }catch (Exception exception){
             System.out.println("Database connection error: " + exception.getMessage());
         }
-
     }
 
-    @GET
-    @Path("")
-    @Produces(MediaType.APPLICATION_JSON)
-    public static readUsers(){
-        System.out.println("users/read");
+   // @GET
+   // @Path("read/")
+    //@Produces(MediaType.APPLICATION_JSON)
+    public static void readUsers(){
+        System.out.println("admin/read/");
         JSONArray read = new JSONArray();
         try{
-            PreparedStatement ps = Main.db.prepareStatement("SELECT UserID, Username, Password FROM Users");
+            PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Users");
             ResultSet results = ps.executeQuery();
-            System.out.println("UserID | Username | Password");
+            System.out.println("UserID | UserEmail | UserName | UserPass | UserAdmin");
             while (results.next()){
                 int UserID = results.getInt(1);
-                String Username = results.getString(2);
-                String Password = results.getString(3);
-                System.out.println(UserID + " | " + Username + " | " + Password);
+                String UserEmail = results.getString(2);
+                String UserName = results.getString(3);
+                String UserPass = results.getString(4);
+                boolean UserAdmin = results.getBoolean(5); //ALWAYS COMING OUT AS FALSE. TEST AND FIX
+                System.out.println(UserID + " | " + UserEmail + " | " + UserName + " | " + UserPass + " | " + UserAdmin);
             }
-            return read.toString();
+            //return read.toString();
         }catch (Exception exception){
             System.out.println("Database error: " + exception.getMessage());
-            return "{\"error\": \"Unable to list items. Please see your server console for more information.\"}";
         }
     }
 
-    public static void writeUsers(){
+ //   @POST
+ //   @Path("create/")
+ //   @Consumes(MediaType.MULTIPART_FORM_DATA)
+  //  @Produces(MediaType.APPLICATION_JSON)
+    public String createUsers(){
+        System.out.println("users/create/");
+        JSONArray read = new JSONArray();
         try{
-
-            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (UserID, Username, Password) VALUES (?, ?, ?)");
+            PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (UserID, UserEmail, UserName, UserPass, UserAdmin) VALUES (?, ?, ?, ?, ?)");
 
             Scanner sc = new Scanner(System.in);
 
-            System.out.println("Please input Username");
+            System.out.println("Please input username");
             String UsernameAdd = sc.nextLine();
 
-            System.out.println("Please input Password");
+            System.out.println("Please input your email");
+            String EmailAdd = sc.nextLine();
+
+            System.out.println("Please input password");
             String PasswordAdd = sc.nextLine();
 
             //int UserIDAdd = ;
 
+            //if(UsernameAdd.substring(0, 4).equals("aots")) { //BROKEN UNTIL USERADMIN FIXED
+            //    ps.setString(5, true);
+           // }else{
+           //     ps.setString(5,false);
+           // }
+
             //ps.setInt(1, UserIDAdd);
-            ps.setString(2, UsernameAdd);
-            ps.setString(3, PasswordAdd);
+            ps.setString(2, EmailAdd);
+            ps.setString(3, UsernameAdd);
+            ps.setString(4, PasswordAdd);
 
             ps.executeUpdate();
+            return read.toString();
 
         } catch (Exception exception){
             System.out.println("Database error: " + exception.getMessage());
+            return "{\"error\": \"Unable to create user. Please see your server console for more information.\"}";
         }
     }
 
+    //@GET
+    //@Path("close/")
+    //@Produces(MediaType.APPLICATION_JSON)
     public static void closeUsers(){ //Function to close the database.
         try{
             Main.db.close();
