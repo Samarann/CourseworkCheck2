@@ -7,6 +7,11 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.sqlite.SQLiteConfig;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,22 +24,24 @@ public class Main{
 
     public static void main(String[] args){
 
-        openUsers("Users.db"); //Opens the access to the database to be read to.
-        serverConfiguration();
+        openDatabase("Users.db"); //Opens the access to the database to be read to.
+        //serverConfiguration();
 
-
+        Controllers.Users.readUsers();
+        Controllers.Users.createUsers();
+        Controllers.Users.readUsers();
 
         closeDatabase(); //Closes the access to the database to be read to, so that it doesn't take up resources when it isn't being used.
         //Controllers.Users.createUsers();
     }
 
-    //@Path("users/")
-    public static void openUsers(String dbFile){ //Function to open the database.
+    @Path("users/")
+    public static void openDatabase(String dbFile){ //Function to open the database.
         try{
             Class.forName("org.sqlite.JDBC"); //Loads the database driver.
             SQLiteConfig config = new SQLiteConfig(); //Loads the database settings.
             config.enforceForeignKeys(true); //Loads the database settings.
-            Main.db = DriverManager.getConnection("jdbc:sqlite:resources/" + dbFile, config.toProperties()); //Open the database files.
+            db = DriverManager.getConnection("jdbc:sqlite:resources/" + dbFile, config.toProperties()); //Open the database files.
             System.out.println("Database connection successfully established.");
         }catch (Exception exception){
             System.out.println("Database connection error: " + exception.getMessage());
@@ -60,12 +67,12 @@ public class Main{
         }
     }
 
-    //@GET
-    //@Path("close/")
-    //@Produces(MediaType.APPLICATION_JSON)
+    @GET
+    @Path("close/")
+    @Produces(MediaType.APPLICATION_JSON)
     public static void closeDatabase(){ //Function to close the database.
         try{
-            Main.db.close();
+            db.close();
             System.out.println("Disconnected from database.");
         } catch (Exception exception){
             System.out.println("Database disconnection error: " + exception.getMessage());

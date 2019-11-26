@@ -20,8 +20,8 @@ public class SavesInside {
                 System.out.println(FolderID + " | " + SaveID);
             }
             //return read.toString();
-        }catch (Exception exception){
-            System.out.println("Database error: " + exception.getMessage());
+        }catch (Exception e){
+            System.out.println("Database error: " + e.getMessage());
             //return "{\"error\": \"Unable to create user. Please see your server console for more information.\"}";
         }
     }

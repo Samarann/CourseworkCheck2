@@ -20,8 +20,8 @@ public class Saves {
                 System.out.println(SaveID + " | " + SaveName);
             }
             //return read.toString();
-        }catch (Exception exception){
-            System.out.println("Database error: " + exception.getMessage());
+        }catch (Exception e){
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
@@ -30,9 +30,9 @@ public class Saves {
             PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Saves WHERE SaveID = ?");
             ps.setInt(1, SaveID);
             ps.execute();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            System.out.println("Database error: " + exception.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 }

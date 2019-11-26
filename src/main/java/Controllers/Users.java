@@ -2,13 +2,11 @@ package Controllers;
 
 
 import Server.Main;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import java.util.HashMap;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,8 +17,8 @@ public class Users{
     @GET
     @Path("read/")
     @Produces(MediaType.APPLICATION_JSON)
-    public String readUsers(){
-        System.out.println("admin/read/");
+    public static String readUsers(){
+        System.out.println("users/read/");
         JSONArray read = new JSONArray();
         try{
             PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Users");
@@ -34,53 +32,47 @@ public class Users{
                 item.put("UserPass", results.getString(4));
                 item.put("UserAdmin", results.getBoolean(5));
                 read.add(item);
-                //System.out.println(UserID + " | " + UserEmail + " | " + UserName + " | " + UserPass + " | " + UserAdmin);
+                System.out.println(results.getString("UserID") + " | " + results.getString("UserEmail") + " | " + results.getString("UserName") + " | " + results.getString("UserPass") + " | " + results.getString("UserAdmin"));
             }
             return read.toString();
-        }catch (Exception exception){
-            System.out.println("Database error: " + exception.getMessage());
-            return "{\"error\": \"Unable to read user. Please see your server console for more information.\"}";
+        }catch (Exception e) {
+            System.out.println("Database error: " + e.getMessage());
+            return "{\"error\"; \"Unable to list items, please see server console for more info.\"}";
         }
     }
 
- //   @POST
- //   @Path("create/")
- //   @Consumes(MediaType.MULTIPART_FORM_DATA)
-  //  @Produces(MediaType.APPLICATION_JSON)
-    public static void createUsers(){
+    @POST
+    @Path("create/")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public static void createUsers(@FormDataParam("UserEmailAdd") String UserEmailAdd, @FormDataParam("UserNameAdd") String UserNameAdd, @FormDataParam("UserPassAdd") String UserPassAdd){
         System.out.println("users/create/");
         JSONArray read = new JSONArray();
         try{
+            if(UserEmailAdd == null || UserNameAdd == null || UserPassAdd == null){
+                throw new Exception("One or more data parameters are missing values in the HTTP request.");
+            }
+            System.out.println("users/create UserID=" + UserID);
+
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (UserID, UserEmail, UserName, UserPass, UserAdmin) VALUES (?, ?, ?, ?, ?)");
 
             Scanner sc = new Scanner(System.in);
 
-            System.out.println("Please input username");
-            String UsernameAdd = sc.nextLine();
-
-            System.out.println("Please input your email");
-            String EmailAdd = sc.nextLine();
-
-            System.out.println("Please input password");
-            String PasswordAdd = sc.nextLine();
-
-            //int UserIDAdd = ;
-
-            if(UsernameAdd.substring(0, 4).equals("aots")) { //BROKEN UNTIL USERADMIN FIXED
+            if(UserNameAdd.substring(0, 4).equals("aots")) {
                 ps.setBoolean(5, true);
             }else{
                 ps.setBoolean(5, false);
             }
 
-            ps.setString(2, EmailAdd);
-            ps.setString(3, UsernameAdd);
-            ps.setString(4, PasswordAdd);
+            ps.setString(2, UserEmailAdd);
+            ps.setString(3, UserNameAdd);
+            ps.setString(4, UserPassAdd);
 
             ps.executeUpdate();
             read.toString();
 
-        } catch (Exception exception){
-            System.out.println("Database error: " + exception.getMessage());
+        } catch (Exception e){
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
@@ -89,9 +81,9 @@ public class Users{
             PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Users WHERE UserID = ?");
             ps.setInt(1, UserID);
             ps.execute();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            System.out.println("Database error: " + exception.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 }

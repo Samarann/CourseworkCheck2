@@ -19,8 +19,8 @@ public class Folders {
                 System.out.println(FolderID + " | " + FolderName);
             }
             //return read.toString();
-        }catch (Exception exception){
-            System.out.println("Database error: " + exception.getMessage());
+        }catch (Exception e){
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 
@@ -29,9 +29,9 @@ public class Folders {
             PreparedStatement ps = Main.db.prepareStatement("DELETE FROM Folders WHERE FolderID = ?");
             ps.setInt(1, FolderID);
             ps.execute();
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            System.out.println("Database error: " + exception.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Database error: " + e.getMessage());
         }
     }
 }
