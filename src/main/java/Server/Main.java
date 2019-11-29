@@ -18,37 +18,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Scanner;
 
-public class Main{
+public class Main {
 
     public static Connection db = null;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
-        openDatabase("Users.db"); //Opens the access to the database to be read to.
-        //serverConfiguration();
+        openDatabase("Users.db");
 
-        Controllers.Users.readUsers();
-        Controllers.Users.createUsers();
-        Controllers.Users.readUsers();
-
-        closeDatabase(); //Closes the access to the database to be read to, so that it doesn't take up resources when it isn't being used.
-        //Controllers.Users.createUsers();
-    }
-
-    @Path("users/")
-    public static void openDatabase(String dbFile){ //Function to open the database.
-        try{
-            Class.forName("org.sqlite.JDBC"); //Loads the database driver.
-            SQLiteConfig config = new SQLiteConfig(); //Loads the database settings.
-            config.enforceForeignKeys(true); //Loads the database settings.
-            db = DriverManager.getConnection("jdbc:sqlite:resources/" + dbFile, config.toProperties()); //Open the database files.
-            System.out.println("Database connection successfully established.");
-        }catch (Exception exception){
-            System.out.println("Database connection error: " + exception.getMessage());
-        }
-    }
-
-    public static void serverConfiguration(){
         ResourceConfig config = new ResourceConfig(); //Prepares Jersey servlet.
         config.packages("Controllers");
         config.register(MultiPartFeature.class);
@@ -64,20 +41,23 @@ public class Main{
             server.join();
         } catch (Exception e) {
             e.printStackTrace();
+
+            //Controllers.Users.readUsers();
+            //Controllers.Users.createUsers(8, "imauser@createduser.com", "CreatedUser", "1m4n3wus3r");
+            //Controllers.Users.readUsers();
         }
     }
 
-    @GET
-    @Path("close/")
-    @Produces(MediaType.APPLICATION_JSON)
-    public static void closeDatabase(){ //Function to close the database.
-        try{
-            db.close();
-            System.out.println("Disconnected from database.");
-        } catch (Exception exception){
-            System.out.println("Database disconnection error: " + exception.getMessage());
+
+    public static void openDatabase(String dbFile) { //Function to open the database.
+        try {
+            Class.forName("org.sqlite.JDBC"); //Loads the database driver.
+            SQLiteConfig config = new SQLiteConfig(); //Loads the database settings.
+            config.enforceForeignKeys(true); //Loads the database settings.
+            db = DriverManager.getConnection("jdbc:sqlite:resources/" + dbFile, config.toProperties()); //Open the database files.
+            System.out.println("Database connection successfully established.");
+        } catch (Exception exception) {
+            System.out.println("Database connection error: " + exception.getMessage());
         }
     }
 }
-
-
