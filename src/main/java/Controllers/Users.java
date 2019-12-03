@@ -56,8 +56,6 @@ public class Users{
 
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Users (UserID, UserEmail, UserName, UserPass, UserAdmin) VALUES (?, ?, ?, ?, ?)");
 
-            Scanner sc = new Scanner(System.in);
-
             if(UserNameAdd.substring(0, 4).equals("aots")) {
                 ps.setBoolean(5, true);
             }else{
@@ -80,7 +78,7 @@ public class Users{
     }
 
     @POST
-    @Path("delete")
+    @Path("delete/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public static String deleteUsers(@FormDataParam("UserID") Integer UserID){
@@ -103,5 +101,37 @@ public class Users{
         }
     }
 
+    @POST
+    @Path("update/")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String updateUsers(@FormDataParam("UserIDUp") Integer UserIDUp, @FormDataParam("UserNameUp") String UserNameUp, @FormDataParam("UserEmailUp") String UserEmailUp, @FormDataParam("UserPassUp") String UserPassUp){
+        System.out.println("users/update/");
+        try{
+            if(UserIDUp == null ||  UserNameUp == null || UserEmailUp == null || UserPassUp == null){
+                throw new Exception("One or more data form parameters are missing from the HTTP request.");
+            }
+            System.out.println("users/update UserID=" + UserIDUp);
 
+            PreparedStatement ps = Main.db.prepareStatement("UPDATE Users SET UserName = ?, UserEmail = ?, UserPass = ?, UserAdmin = ? WHERE UserID = ?");
+
+            if(UserNameUp.substring(0, 4).equals("aots")) {
+                ps.setBoolean(5, true);
+            }else{
+                ps.setBoolean(5, false);
+            }
+
+            ps.setInt(1, UserIDUp);
+            ps.setString(2, UserNameUp);
+            ps.setString(3, UserEmailUp);
+            ps.setString(4, UserPassUp);
+
+            ps.execute();
+            return "{\"status\": \"OK\"}";
+
+        } catch (Exception e){
+            System.out.println("Database error: " + e.getMessage());
+            return "{\"error\": \"Unable to update item, please see server console for more info.\"}";
+        }
+    }
 }
