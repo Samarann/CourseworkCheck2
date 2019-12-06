@@ -68,7 +68,7 @@ public class Factors{
     }
 
     @POST
-    @Path("delete")
+    @Path("delete/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public static String deleteFactors(@FormDataParam("FactorID") Integer FactorID){
@@ -91,4 +91,29 @@ public class Factors{
         }
     }
 
+    @POST
+    @Path("update/")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String updateFactors(@FormDataParam("FactorIDUp") Integer FactorIDUp, @FormDataParam("FactorNameUp") String FactorNameUp, @FormDataParam("FactorEffectUp") String FactorEffectUp){
+        System.out.println("users/update/");
+        try{
+            if(FactorIDUp == null ||  FactorNameUp == null || FactorEffectUp == null){
+                throw new Exception("One or more data form parameters are missing from the HTTP request.");
+            }
+            System.out.println("factors/update FactorIDUp=" + FactorIDUp);
+
+            PreparedStatement ps = Main.db.prepareStatement("UPDATE Factors SET FactorName = ?, FactorEffect = ? WHERE FactorID = ?");
+
+            ps.setString(1, FactorNameUp);
+            ps.setString(2, FactorEffectUp);
+            ps.setInt(3, FactorIDUp);
+            ps.executeUpdate();
+            return "{\"status\": \"OK\"}";
+
+        } catch (Exception e){
+            System.out.println("Database error: " + e.getMessage());
+            return "{\"error\": \"Unable to update item, please see server console for more info.\"}";
+        }
+    }
 }

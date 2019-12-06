@@ -115,18 +115,18 @@ public class Users{
 
             PreparedStatement ps = Main.db.prepareStatement("UPDATE Users SET UserName = ?, UserEmail = ?, UserPass = ?, UserAdmin = ? WHERE UserID = ?");
 
+            ps.setString(1, UserNameUp);
+            ps.setString(2, UserEmailUp);
+            ps.setString(3, UserPassUp);
+            ps.setInt(5, UserIDUp);
+
             if(UserNameUp.substring(0, 4).equals("aots")) {
-                ps.setBoolean(5, true);
+                ps.setBoolean(4, true);
             }else{
-                ps.setBoolean(5, false);
+                ps.setBoolean(4, false);
             }
 
-            ps.setInt(1, UserIDUp);
-            ps.setString(2, UserNameUp);
-            ps.setString(3, UserEmailUp);
-            ps.setString(4, UserPassUp);
-
-            ps.execute();
+            ps.executeUpdate();
             return "{\"status\": \"OK\"}";
 
         } catch (Exception e){
