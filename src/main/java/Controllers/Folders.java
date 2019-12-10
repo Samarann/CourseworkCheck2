@@ -3,6 +3,7 @@ package Controllers;
 import Server.Main;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -15,20 +16,23 @@ public class Folders {
     @GET
     @Path("read/")
     @Produces(MediaType.APPLICATION_JSON)
-    public static void readFolders(){
+    public static String readFolders(){
         System.out.println("folders/read/");
         JSONArray read = new JSONArray();
         try{
             PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Folders");
             ResultSet results = ps.executeQuery();
             while (results.next()){
-                int FolderID = results.getInt(1);
-                String FolderName = results.getString(2);
-                System.out.println(FolderID + " | " + FolderName);
+                JSONObject item = new JSONObject();
+                item.put("FolderID", results.getInt(1));
+                item.put("FolderName", results.getString(2));
+                read.add(item);
+                System.out.println(results.getString("FolderID") + " | " + results.getString("FolderName"));
             }
-            //return read.toString();
+            return read.toString();
         }catch (Exception e){
             System.out.println("Database error: " + e.getMessage());
+            return "{\"error\"; \"Unable to list items, please see server console for more info.\"}";
         }
     }
 
@@ -61,7 +65,6 @@ public class Folders {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public String updateFolders(@FormDataParam("FolderIDUp") Integer FolderIDUp, @FormDataParam("FolderNameUp") String FolderNameUp){
-        System.out.println("users/update/");
         try{
             if(FolderIDUp == null ||  FolderNameUp == null){
                 throw new Exception("One or more data form parameters are missing from the HTTP request.");
@@ -92,11 +95,9 @@ public class Folders {
             if (FolderIDAdd == null || FolderNameAdd == null) {
                 throw new Exception("One or more data parameters are missing values in the HTTP request.");
             }
-            System.out.println("folders/create FolderID=" + FolderIDAdd);
+            System.out.println("folders/create FolderIDAdd=" + FolderIDAdd);
 
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Folders (FolderID, FolderName) VALUES (?, ?)");
-
-            Scanner sc = new Scanner(System.in);
 
             ps.setInt(1, FolderIDAdd);
             ps.setString(2, FolderNameAdd);

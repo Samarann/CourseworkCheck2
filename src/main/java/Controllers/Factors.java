@@ -3,6 +3,7 @@ package Controllers;
 import Server.Main;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.sqlite.SQLiteConfig;
 
 import javax.ws.rs.*;
@@ -17,22 +18,24 @@ public class Factors{
     @GET
     @Path("read/")
     @Produces(MediaType.APPLICATION_JSON)
-    public static void readFactors(){
+    public static String readFactors(){
         System.out.println("factors/read/");
         JSONArray read = new JSONArray();
         try{
             PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Factors");
             ResultSet results = ps.executeQuery();
-            System.out.println("FactorID | FactorName | FactorEffect");
             while (results.next()){
-                int FactorID = results.getInt(1);
-                String FactorName = results.getString(2);
-                String FactorEffect = results.getString(3);
-                System.out.println(FactorID + " | " + FactorName + " | " + FactorEffect);
+                JSONObject item = new JSONObject();
+                item.put("FactorID", results.getInt(1));
+                item.put("FactorName", results.getString(2));
+                item.put("FactorEffect", results.getString(3));
+                read.add(item);
+                System.out.println(results.getString("FactorID") + " | " + results.getString("FactorName") + " | " + results.getString("FactorEffect"));
             }
-            //return read.toString();
+            return read.toString();
         }catch (Exception e){
             System.out.println("Database error: " + e.getMessage());
+            return "{\"error\"; \"Unable to list items, please see server console for more info.\"}";
         }
     }
 
@@ -50,8 +53,6 @@ public class Factors{
             System.out.println("factors/create FactorID=" + FactorIDAdd);
 
             PreparedStatement ps = Main.db.prepareStatement("INSERT INTO Factors (FactorID, FactorName, FactorEffect) VALUES (?, ?, ?)");
-
-            Scanner sc = new Scanner(System.in);
 
             ps.setInt(1, FactorIDAdd);
             ps.setString(2, FactorNameAdd);

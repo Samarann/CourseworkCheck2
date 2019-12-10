@@ -23,7 +23,6 @@ public class Users{
         try{
             PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Users");
             ResultSet results = ps.executeQuery();
-            //System.out.println("UserID | UserName | UserEmail | UserPass | UserAdmin");
             while (results.next()){
                 JSONObject item = new JSONObject();
                 item.put("UserID", results.getInt(1));
