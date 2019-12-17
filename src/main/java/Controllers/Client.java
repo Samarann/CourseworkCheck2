@@ -23,7 +23,7 @@ public class Client {
     @Path("css/{path}")
     @Produces({"text/ccs"})
     public byte[] getCSSFile(@PathParam("path") String path){
-        return getFile("client/css" + path);
+        return getFile("client/css/" + path);
     }
 
     @GET
