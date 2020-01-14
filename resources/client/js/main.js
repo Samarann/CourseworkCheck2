@@ -1,79 +1,137 @@
-function pageLoad(){
+function pageLoad() {
 
-    let myHTML = '<div style="text-align: center;">' +
-        '<h1>Welcome to my API powered website!</h1>' +
-        '<img src="/client/img/logo.png" alt="Logo"/>' +
-        '<div style="front-style: italic;">' +
-        'Generated at ' + now.toLocaleTimeString() +
-        '</div>' +
-        '</div>';
-
-    document.getElementById("testDiv").innerHTML = myHTML;
-
-        let HTML = '<table>' +
+    let saveHTML = `<table>` +
         '<tr>' +
-        '<th>ID</th>' +
         '<th>Name</th>' +
+        '<th>Owner</th>' +
+        '<th class="last">Options</th>' +
         '</tr>';
 
-        fetch('/client/main', {method: 'get'}).then(response => response.json()).then
+    fetch('/client/main', {method: 'get'}
+    ).then(response => response.json()
+    ).then(saves => {
 
-    if(window.location.search === '?logout') {
-        document.getElementById('content').innerHTML = '<h1>Logging out, please wait...</h1>';
-        logout();
+        let myHTML = `<table>` +
+            '<tr>' +
+            '<th>Name</th>' +
+            '<th>Owner</th>' +
+            '<th class="last">Options</th>' +
+            '</tr>';
+
+        for (let save of saves) {
+
+            myHTML += `<tr>` +
+                `<td>${save.name}</td>` +
+                `<td>${save.owner}</td>` +
+                `<td class="last">` +
+                `<button class='editButton' data-id='${save.name}'>Edit</button>` +
+                `<button class='deleteButton' data-id='${save.name}'>Delete</button>` +
+                `</td>` +
+                `</tr>`;
+        }
+
+        saveHTML += '</table>';
+        document.getElementById("listDiv").innerHTML = saveHTML;
+
+        let editButtons = document.getElementsByClassName("editButton");
+        for (let button of editButtons) {
+            button.addEventListener("click", editSaves);
+        }
+        let deleteButtons = document.getElementsByClassName("deleteButton");
+        for (let button of deleteButtons) {
+            button.addEventListener("click", deleteSaves);
+        }
+    });
+    document.getElementById("saveButton").addEventListener("click", saveEditSaves);
+    document.getElementById("cancelButton").addEventListener("click", cancelEditSaves);
+}
+function editSaves(event) {
+    const id = event.target.getAttribute("data-id");
+    if (id === null) {
+        document.getElementById("editHeading").innerHTML = 'Add new Save:';
+        document.getElementById("fruitId").value = '';
+        document.getElementById("saveName").value = '';
+        document.getElementById("listDiv").style.display = 'none';
+        document.getElementById("editDiv").style.display = 'block';
     } else {
-        document.getElementById("loginButton").addEventListener("click", login);
-    }
-
-    function login(event) {
-
-        event.preventDefault();
-
-        const form = document.getElementById("loginForm");
-        const formData = new FormData(form);
-
-        fetch("/users/login", {method: 'post', body: formData}
+        fetch('/fruit/get/' + id, {method: 'get'}
         ).then(response => response.json()
-        ).then(responseData => {
-
-            if (responseData.hasOwnProperty('error')) {
-                alert(responseData.error);
+        ).then(fruit => {
+            if (fruit.hasOwnProperty('error')) {
+                alert(fruit.error);
             } else {
-                Cookies.set("username", responseData.username);
-                Cookies.set("token", responseData.token);
+                document.getElementById("editHeading").innerHTML = 'Editing ' + fruit.name + ':';
+                document.getElementById("fruitId").value = id;
+                document.getElementById("fruitName").value = fruit.name;
+                document.getElementById("fruitImage").value = fruit.image;
+                document.getElementById("fruitColour").value = fruit.colour;
+                document.getElementById("fruitSize").value = fruit.size;
+                document.getElementById("listDiv").style.display = 'none';
+                document.getElementById("editDiv").style.display = 'block';
 
-                window.location.href = '../main.html';
             }
         });
     }
-
-    fetch("/users/logout", {method: 'post'}
+}
+function saveEditFruit(event) {
+    event.preventDefault();
+    if (document.getElementById("fruitName").value.trim() === '') {
+        alert("Please provide a fruit name.");
+        return;
+    }
+    if (document.getElementById("fruitImage").value.trim() === '') {
+        alert("Please provide a fruit image.");
+        return;
+    }
+    if (document.getElementById("fruitColour").value.trim() === '') {
+        alert("Please provide a fruit colour.");
+        return;
+    }
+    if (document.getElementById("fruitSize").value.trim() === '') {
+        alert("Please provide a fruit size.");
+        return;
+    }
+    const id = document.getElementById("fruitId").value;
+    const form = document.getElementById("fruitForm");
+    const formData = new FormData(form);
+    let apiPath = '';
+    if (id === '') {
+        apiPath = '/fruit/new';
+    } else {
+        apiPath = '/fruit/update';
+    }
+    fetch(apiPath, {method: 'post', body: formData}
     ).then(response => response.json()
     ).then(responseData => {
         if (responseData.hasOwnProperty('error')) {
-
             alert(responseData.error);
-
         } else {
-
-            Cookies.remove("username");
-            Cookies.remove("token");
-
-            window.location.href = '../main.html';
-
+            document.getElementById("listDiv").style.display = 'block';
+            document.getElementById("editDiv").style.display = 'none';
+            pageLoad();
         }
     });
-
-
-    //let now = new Date();
-
-    //let myHTML = '<div style="text-align: center;">' +
-    //    '<h1>Welcome to my API powered website!</h1>' +
-    //    '<img src="/client/img/logo.png" alt="Logo"/>' +
-    //    '<div style="front-style: italic;">' +
-    //    'Generated at ' + now.toLocaleTimeString() +
-    //    '</div>' +
-    //    '</div>';
-
-   //     document.getElementById("testDiv").innerHTML = myHTML;
+}
+function cancelEditFruit(event) {
+    event.preventDefault();
+    document.getElementById("listDiv").style.display = 'block';
+    document.getElementById("editDiv").style.display = 'none';
+}
+function deleteFruit(event) {
+    const ok = confirm("Are you sure?");
+    if (ok === true) {
+        let id = event.target.getAttribute("data-id");
+        let formData = new FormData();
+        formData.append("id", id);
+        fetch('/fruit/delete', {method: 'post', body: formData}
+        ).then(response => response.json()
+        ).then(responseData => {
+                if (responseData.hasOwnProperty('error')) {
+                    alert(responseData.error);
+                } else {
+                    pageLoad();
+                }
+            }
+        );
+    }
 }

@@ -17,7 +17,7 @@ h1 {
 }
 
 .loginDiv{
-    font-side: 14pt;
+    font-size: 14pt;
     margin-top: 40px;
     margin-left: 20px;
 }
@@ -40,4 +40,22 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+#loggedInDetails {
+    margin: 0;
+    text-align: right;
+    display: inline;
+    float: right
+}
+
+.deleteButton, #cancelButton {
+    visibility: hidden;
+    background-color: indianred;
+    margin-left: 10px;
+}
+
+.editButton {
+    visibility: hidden;
+    background-color: silver;
 }

@@ -3,7 +3,7 @@ package Controllers;
 import Server.Main;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.simple.JSONArray;
-
+import org.json.simple.JSONObject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
@@ -12,24 +12,30 @@ import java.util.Scanner;
 
 @Path("saves/")
 public class Saves {
+
     @GET
     @Path("read/")
     @Produces(MediaType.APPLICATION_JSON)
-    public static void readSaves(){
+    public static String readSaves(){
         System.out.println("saves/read/");
         JSONArray read = new JSONArray();
         try{
-            PreparedStatement ps = Main.db.prepareStatement("SELECT * FROM Saves");
+            PreparedStatement ps = Main.db.prepareStatement("SELECT SaveID, SaveName FROM Saves");
             ResultSet results = ps.executeQuery();
             System.out.println("SaveID | SaveName");
             while (results.next()){
-                int SaveID = results.getInt(1);
-                String SaveName = results.getString(2);
-                System.out.println(SaveID + " | " + SaveName);
+                JSONObject item = new JSONObject();
+                item.put("SaveID", results.getInt(1));
+                item.put("SaveName", results.getString(2));
+
+                //int SaveID = results.getInt(1);
+                // SaveName = results.getString(2);
+                //System.out.println(SaveID + " | " + SaveName);
             }
-            //return read.toString();
+            return read.toString();
         }catch (Exception e){
             System.out.println("Database error: " + e.getMessage());
+            return "{\"error\": \"Unable to list saves, please see server console for more info.\"}";
         }
     }
 
