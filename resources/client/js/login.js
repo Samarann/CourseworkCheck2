@@ -10,44 +10,33 @@ function pageLoad() {
 }
 
 function login(event) {
-
     event.preventDefault();
-
     const form = document.getElementById("loginForm");
     const formData = new FormData(form);
-
     fetch("/users/login", {method: 'post', body: formData}
     ).then(response => response.json()
     ).then(responseData => {
-
         if (responseData.hasOwnProperty('error')) {
             alert(responseData.error);
         } else {
             Cookies.set("username", responseData.username);
             Cookies.set("token", responseData.token);
 
-            window.location.href = '/client/index.html';
+            window.location.href = '/client/main.html';
         }
     });
 }
 
 function logout() {
-
-    fetch("/user/logout", {method: 'post'}
+    fetch("/users/logout", {method: 'post'}
     ).then(response => response.json()
     ).then(responseData => {
         if (responseData.hasOwnProperty('error')) {
-
             alert(responseData.error);
-
         } else {
-
-            Cookies.remove("username");
+            Cookies.remove("UserName");
             Cookies.remove("token");
-
-            window.location.href = '/client/index.html';
-
+            window.location.href = '/client/main.html';
         }
     });
-
 }

@@ -43,8 +43,11 @@ public class Factors{
     @Path("create/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String createFactors(@FormDataParam("FactorIDAdd") Integer FactorIDAdd, @FormDataParam("FactorNameAdd") String FactorNameAdd, @FormDataParam("FactorEffectAdd") String FactorEffectAdd) {
+    public static String createFactors(@FormDataParam("FactorIDAdd") Integer FactorIDAdd, @FormDataParam("FactorNameAdd") String FactorNameAdd, @FormDataParam("FactorEffectAdd") String FactorEffectAdd, @CookieParam("token") String token) {
         System.out.println("factors/create/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         JSONArray read = new JSONArray();
         try {
             if (FactorNameAdd == null || FactorEffectAdd == null) {
@@ -72,7 +75,11 @@ public class Factors{
     @Path("delete/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String deleteFactors(@FormDataParam("FactorID") Integer FactorID){
+    public static String deleteFactors(@FormDataParam("FactorID") Integer FactorID, @CookieParam("token") String token){
+        System.out.println("factors/delete/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if (FactorID == null){
                 throw new Exception("The ID data parameter is missing from the HTTP request.");
@@ -96,8 +103,11 @@ public class Factors{
     @Path("update/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateFactors(@FormDataParam("FactorIDUp") Integer FactorIDUp, @FormDataParam("FactorNameUp") String FactorNameUp, @FormDataParam("FactorEffectUp") String FactorEffectUp){
+    public String updateFactors(@FormDataParam("FactorIDUp") Integer FactorIDUp, @FormDataParam("FactorNameUp") String FactorNameUp, @FormDataParam("FactorEffectUp") String FactorEffectUp, @CookieParam("token") String token){
         System.out.println("users/update/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if(FactorIDUp == null ||  FactorNameUp == null || FactorEffectUp == null){
                 throw new Exception("One or more data form parameters are missing from the HTTP request.");

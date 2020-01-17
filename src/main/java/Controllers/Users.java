@@ -46,8 +46,11 @@ public class Users{
     @Path("create/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String createUsers(@FormDataParam("UserIDAdd") Integer UserIDAdd, @FormDataParam("UserEmailAdd") String UserEmailAdd, @FormDataParam("UserNameAdd") String UserNameAdd, @FormDataParam("UserPassAdd") String UserPassAdd){
+    public static String createUsers(@FormDataParam("UserIDAdd") Integer UserIDAdd, @FormDataParam("UserEmailAdd") String UserEmailAdd, @FormDataParam("UserNameAdd") String UserNameAdd, @FormDataParam("UserPassAdd") String UserPassAdd, @CookieParam("token") String token){
         System.out.println("users/create/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         JSONArray read = new JSONArray();
         try{
             if(UserEmailAdd == null || UserNameAdd == null || UserPassAdd == null){
@@ -82,7 +85,11 @@ public class Users{
     @Path("delete/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String deleteUsers(@FormDataParam("UserID") Integer UserID){
+    public static String deleteUsers(@FormDataParam("UserID") Integer UserID, @CookieParam("token") String token){
+        System.out.println("users/delete/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if (UserID == null){
                 throw new Exception("The ID data parameter is missing from the HTTP request.");
@@ -106,8 +113,11 @@ public class Users{
     @Path("update/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateUsers(@FormDataParam("UserIDUp") Integer UserIDUp, @FormDataParam("UserNameUp") String UserNameUp, @FormDataParam("UserEmailUp") String UserEmailUp, @FormDataParam("UserPassUp") String UserPassUp){
+    public String updateUsers(@FormDataParam("UserIDUp") Integer UserIDUp, @FormDataParam("UserNameUp") String UserNameUp, @FormDataParam("UserEmailUp") String UserEmailUp, @FormDataParam("UserPassUp") String UserPassUp, @CookieParam("token") String token){
         System.out.println("users/update/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if(UserIDUp == null ||  UserNameUp == null || UserEmailUp == null || UserPassUp == null){
                 throw new Exception("One or more data form parameters are missing from the HTTP request.");
@@ -140,41 +150,34 @@ public class Users{
     @Path("login")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String loginUser(@FormDataParam("UserName") String UserName, @FormDataParam("UserPass") String UserPass) {
-
+    public String loginUser(@FormDataParam("UserName") String UserName, @FormDataParam("UserPass") String UserPass, @CookieParam("token") String token) {
+        System.out.println("users/login");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try {
-
-            System.out.println("users/login");
 
             PreparedStatement ps1 = Main.db.prepareStatement("SELECT Password FROM Users WHERE Username = ?");
             ps1.setString(1, UserName);
             ResultSet loginResults = ps1.executeQuery();
             if (loginResults.next()) {
-
                 String correctPassword = loginResults.getString(1);
-
                 if (UserPass.equals(correctPassword)) {
-
-                    String token = UUID.randomUUID().toString();
-
+                    token = UUID.randomUUID().toString();
                     PreparedStatement ps2 = Main.db.prepareStatement("UPDATE Users SET Token = ? WHERE Username = ?");
                     ps2.setString(1, token);
                     ps2.setString(2, UserName);
                     ps2.executeUpdate();
-
                     JSONObject userDetails = new JSONObject();
                     userDetails.put("UserName", UserName);
                     userDetails.put("token", token);
                     return userDetails.toString();
-
                 } else {
-                    return "{\"error\": \"Incorrect password!\"}";
+                    return "{\"error\": \"Incorrect password.\"}";
                 }
-
             } else {
-                return "{\"error\": \"Unknown user!\"}";
+                return "{\"error\": \"Unknown user.\"}";
             }
-
         } catch (Exception exception){
             System.out.println("Database error during /user/login: " + exception.getMessage());
             return "{\"error\": \"Server side error!\"}";
@@ -186,27 +189,23 @@ public class Users{
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
     public String logoutUser(@CookieParam("token") String token) {
-
+        System.out.println("users/logout");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try {
-
-            System.out.println("users/logout");
-
             PreparedStatement ps1 = Main.db.prepareStatement("SELECT UserID FROM Users WHERE Token = ?");
             ps1.setString(1, token);
             ResultSet logoutResults = ps1.executeQuery();
             if (logoutResults.next()) {
-
                 int id = logoutResults.getInt(1);
-
                 PreparedStatement ps2 = Main.db.prepareStatement("UPDATE Users SET Token = NULL WHERE UserID = ?");
                 ps2.setInt(1, id);
                 ps2.executeUpdate();
-
                 return "{\"status\": \"OK\"}";
             } else {
                 return "{\"error\": \"Invalid token!\"}";
             }
-
         } catch (Exception exception){
             System.out.println("Database error during /user/logout: " + exception.getMessage());
             return "{\"error\": \"Server side error!\"}";

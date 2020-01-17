@@ -32,6 +32,8 @@ function pageLoad(){
             for (let button of deletebuttons){
                 button.addEventListener("click", deleteSaves)
             }
+
+            checkLogin();
     });
 
     document.getElementById("saveButton").addEventListener("click", saveEditSaves);
@@ -90,7 +92,7 @@ function saveEditSaves(event){
         apiPath = 'saves/update';
     }
 
-    fetch(apiPath, {method: 'post', body: formData}).then response => response.json()).then(responseData => {
+    fetch(apiPath, {method: 'post', body: formData}).then(response => response.json()).then(responseData => {
         if(responseData.hasOwnProperty('error')){
             alert(responseData.error);
         } else {
@@ -111,5 +113,46 @@ function deleteSaves(event){
     const confirmation = confirm("Are you sure you want to delete this save?");
 
     if (confirmation === true){
-        let id = event.target.getAttribute("data=id);
+        let id = event.target.getAttribute("data=id");
+    }
 }
+
+function checkLogin() {
+
+    let username = Cookies.get("username");
+
+    let logInHTML = '';
+
+    if (username === undefined) {
+
+        let editButtons = document.getElementsByClassName("editButton");
+        for (let button of editButtons) {
+            button.style.visibility = "hidden";
+        }
+
+        let deleteButtons = document.getElementsByClassName("deleteButton");
+        for (let button of deleteButtons) {
+            button.style.visibility = "hidden";
+        }
+
+        logInHTML = "Not logged in. <a href='/client/login.html'>Log in</a>";
+    } else {
+
+        let editButtons = document.getElementsByClassName("editButton");
+        for (let button of editButtons) {
+            button.style.visibility = "visible";
+        }
+
+        let deleteButtons = document.getElementsByClassName("deleteButton");
+        for (let button of deleteButtons) {
+            button.style.visibility = "visible";
+        }
+
+        logInHTML = "Logged in as " + username + ". <a href='/client/login.html?logout'>Log out</a>";
+
+    }
+
+    document.getElementById("loggedInDetails").innerHTML = logInHTML;
+
+}
+

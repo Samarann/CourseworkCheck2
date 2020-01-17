@@ -12,7 +12,6 @@ import java.util.Scanner;
 
 @Path("saves/")
 public class Saves {
-
     @GET
     @Path("read/")
     @Produces(MediaType.APPLICATION_JSON)
@@ -43,7 +42,11 @@ public class Saves {
     @Path("delete/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String deleteSaves(@FormDataParam("SaveID") Integer SaveID){
+    public static String deleteSaves(@FormDataParam("SaveID") Integer SaveID, @CookieParam("token") String token){
+        System.out.println("saves/delete/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if (SaveID == null){
                 throw new Exception("The ID data parameter is missing from the HTTP request.");
@@ -67,8 +70,11 @@ public class Saves {
     @Path("update/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateSaves(@FormDataParam("SaveIDUp") Integer SaveIDUp, @FormDataParam("SaveNameUp") String SaveNameUp){
+    public String updateSaves(@FormDataParam("SaveIDUp") Integer SaveIDUp, @FormDataParam("SaveNameUp") String SaveNameUp, @CookieParam("token") String token){
         System.out.println("saves/update/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if(SaveIDUp == null ||  SaveNameUp == null){
                 throw new Exception("One or more data form parameters are missing from the HTTP request.");
@@ -92,8 +98,11 @@ public class Saves {
     @Path("create/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String createSaves(@FormDataParam("SaveIDAdd") Integer SaveIDAdd, @FormDataParam("SaveNameAdd") String SaveNameAdd) {
+    public static String createSaves(@FormDataParam("SaveIDAdd") Integer SaveIDAdd, @FormDataParam("SaveNameAdd") String SaveNameAdd, @CookieParam("token") String token) {
         System.out.println("saves/create/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         JSONArray read = new JSONArray();
         try {
             if (SaveIDAdd == null || SaveNameAdd == null) {

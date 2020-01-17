@@ -6,10 +6,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.sqlite.SQLiteConfig;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -44,7 +41,10 @@ public class SaveData {
     @POST
     @Path("insert/")
     @Produces(MediaType.APPLICATION_JSON)
-    public static String insertSaveData(@FormDataParam("SaveID") Integer SaveID, @FormDataParam("FactorID") Integer FactorID){
+    public static String insertSaveData(@FormDataParam("SaveID") Integer SaveID, @FormDataParam("FactorID") Integer FactorID, @CookieParam("token") String token){
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try {
             if (SaveID == null || FactorID == null) {
                 throw new Exception("One or more data parameters are missing values in the HTTP request.");

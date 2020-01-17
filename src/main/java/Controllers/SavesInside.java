@@ -4,10 +4,7 @@ import Server.Main;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.json.simple.JSONArray;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,8 +35,11 @@ public class SavesInside {
     @POST
     @Path("insert/")
     @Produces(MediaType.APPLICATION_JSON)
-    public static String insertSaveInside(@FormDataParam("FolderID") Integer FolderID, @FormDataParam("SaveID") Integer SaveID){
+    public static String insertSaveInside(@FormDataParam("FolderID") Integer FolderID, @FormDataParam("SaveID") Integer SaveID, @CookieParam("token") String token){
         System.out.println("folders/insert/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try {
             if (FolderID == null || SaveID == null) {
                 throw new Exception("One or more data parameters are missing values in the HTTP request.");

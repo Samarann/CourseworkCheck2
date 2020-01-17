@@ -40,7 +40,11 @@ public class Folders {
     @Path("delete/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String deleteFolders(@FormDataParam("FolderID") Integer FolderID, @FormDataParam("FolderName") String FolderName){
+    public static String deleteFolders(@FormDataParam("FolderID") Integer FolderID, @FormDataParam("FolderName") String FolderName, @CookieParam("token") String token){
+        System.out.println("folders/delete/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if (FolderID == null){
                 throw new Exception("The ID data parameter is missing from the HTTP request.");
@@ -64,7 +68,10 @@ public class Folders {
     @Path("update/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String updateFolders(@FormDataParam("FolderIDUp") Integer FolderIDUp, @FormDataParam("FolderNameUp") String FolderNameUp){
+    public String updateFolders(@FormDataParam("FolderIDUp") Integer FolderIDUp, @FormDataParam("FolderNameUp") String FolderNameUp, @CookieParam("token") String token){
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         try{
             if(FolderIDUp == null ||  FolderNameUp == null){
                 throw new Exception("One or more data form parameters are missing from the HTTP request.");
@@ -88,8 +95,11 @@ public class Folders {
     @Path("create/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String createFolders(@FormDataParam("FolderIDAdd") Integer FolderIDAdd, @FormDataParam("FolderNameAdd") String FolderNameAdd) {
+    public static String createFolders(@FormDataParam("FolderIDAdd") Integer FolderIDAdd, @FormDataParam("FolderNameAdd") String FolderNameAdd, @CookieParam("token") String token) {
         System.out.println("folders/create/");
+        if(!Users.validToken(token)){
+            return "{\"error\": \"You are not logged in.\"}";
+        }
         JSONArray read = new JSONArray();
         try {
             if (FolderIDAdd == null || FolderNameAdd == null) {
