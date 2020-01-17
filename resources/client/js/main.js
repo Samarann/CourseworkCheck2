@@ -1,137 +1,115 @@
-function pageLoad() {
-
-    let saveHTML = `<table>` +
+function pageLoad(){
+    let savesHTML = '<table>' +
         '<tr>' +
-        '<th>Name</th>' +
-        '<th>Owner</th>' +
+        '<th>ID</th>' +
+        '<th>Save Name</th>' +
         '<th class="last">Options</th>' +
-        '</tr>';
+        '</tr>'
 
-    fetch('/client/main', {method: 'get'}
-    ).then(response => response.json()
-    ).then(saves => {
+        fetch('/saves/read', {method: 'get'}).then(response => response.json()).then( saves => {
 
-        let myHTML = `<table>` +
-            '<tr>' +
-            '<th>Name</th>' +
-            '<th>Owner</th>' +
-            '<th class="last">Options</th>' +
-            '</tr>';
+            for(let read of saves){
+                savesHTML += `<tr>` +
+                    `<td>${saves.SaveID}</td>` +
+                    `<td>${saves.SaveName}</td>` +
+                    `<td class="last">` +
+                    `<button class='editButton' data-id='${saves.SaveID}'>Edit</button>button` +
+                    `<button class='deleteButton' data-id='${saves.SaveID}'>Delete</button>button` +
+                    `</td>`
+                    `</tr>`;
+            }
 
-        for (let save of saves) {
+            savesHTML += `</table>`;
 
-            myHTML += `<tr>` +
-                `<td>${save.name}</td>` +
-                `<td>${save.owner}</td>` +
-                `<td class="last">` +
-                `<button class='editButton' data-id='${save.name}'>Edit</button>` +
-                `<button class='deleteButton' data-id='${save.name}'>Delete</button>` +
-                `</td>` +
-                `</tr>`;
-        }
+            document.getElementById("listDiv").innerHTML = savesHTML;
 
-        saveHTML += '</table>';
-        document.getElementById("listDiv").innerHTML = saveHTML;
+            let editButtons = document.getElementsByClassName("editButton");
+            for (let button of editButtons){
+                button.addEventListener("click", editSaves);
+            }
 
-        let editButtons = document.getElementsByClassName("editButton");
-        for (let button of editButtons) {
-            button.addEventListener("click", editSaves);
-        }
-        let deleteButtons = document.getElementsByClassName("deleteButton");
-        for (let button of deleteButtons) {
-            button.addEventListener("click", deleteSaves);
-        }
+            let deleteButtons = document.getElementsByClassName("deleteButton");
+            for (let button of deletebuttons){
+                button.addEventListener("click", deleteSaves)
+            }
     });
+
     document.getElementById("saveButton").addEventListener("click", saveEditSaves);
     document.getElementById("cancelButton").addEventListener("click", cancelEditSaves);
 }
-function editSaves(event) {
+
+function editSaves(event){
     const id = event.target.getAttribute("data-id");
-    if (id === null) {
-        document.getElementById("editHeading").innerHTML = 'Add new Save:';
-        document.getElementById("fruitId").value = '';
-        document.getElementById("saveName").value = '';
+
+    if(id === null){
+        document.getElementById("editHeading").innerHTML = 'Add new fruit:';
+
+        document.getElementById("SaveID").value = '';
+        document.getElementById("SaveName").value = '';
+
         document.getElementById("listDiv").style.display = 'none';
         document.getElementById("editDiv").style.display = 'block';
     } else {
-        fetch('/fruit/get/' + id, {method: 'get'}
-        ).then(response => response.json()
-        ).then(fruit => {
-            if (fruit.hasOwnProperty('error')) {
-                alert(fruit.error);
+        fetch('saves/read/' + id, {method: 'get'}).then(response => response.json()).then(fruit =>{
+            if(saves.hasOwnProperty('error')){
+                alert(save.error);
             } else {
-                document.getElementById("editHeading").innerHTML = 'Editing ' + fruit.name + ':';
-                document.getElementById("fruitId").value = id;
-                document.getElementById("fruitName").value = fruit.name;
-                document.getElementById("fruitImage").value = fruit.image;
-                document.getElementById("fruitColour").value = fruit.colour;
-                document.getElementById("fruitSize").value = fruit.size;
+                document.getElementById("editHeading").innerHTML = 'Editing ' + save.SaveName + ':';
+
+                document.getElementById("SaveID").value = id;
+                document.getElementById("SaveName").value = save.SaveName;
+
                 document.getElementById("listDiv").style.display = 'none';
                 document.getElementById("editDiv").style.display = 'block';
-
             }
         });
     }
 }
-function saveEditFruit(event) {
+
+function saveEditSaves(event){
     event.preventDefault();
-    if (document.getElementById("fruitName").value.trim() === '') {
-        alert("Please provide a fruit name.");
+
+    if(document.getElementById("SaveName").value.trim() === ''){
+        alert("Please provide a save name.");
         return;
     }
-    if (document.getElementById("fruitImage").value.trim() === '') {
-        alert("Please provide a fruit image.");
+
+    if(document.getElementById("SaveOwner").value.trim() === ''){
+        alert("Please provide a save name.");
         return;
     }
-    if (document.getElementById("fruitColour").value.trim() === '') {
-        alert("Please provide a fruit colour.");
-        return;
-    }
-    if (document.getElementById("fruitSize").value.trim() === '') {
-        alert("Please provide a fruit size.");
-        return;
-    }
-    const id = document.getElementById("fruitId").value;
-    const form = document.getElementById("fruitForm");
+
+    const id = document.getElementById("SaveID").value;
+    const form = document.getElementById("SaveForm");
     const formData = new FormData(form);
+
     let apiPath = '';
-    if (id === '') {
-        apiPath = '/fruit/new';
+    if (id === ''){
+        apiPath = 'saves/create';
     } else {
-        apiPath = '/fruit/update';
+        apiPath = 'saves/update';
     }
-    fetch(apiPath, {method: 'post', body: formData}
-    ).then(response => response.json()
-    ).then(responseData => {
-        if (responseData.hasOwnProperty('error')) {
+
+    fetch(apiPath, {method: 'post', body: formData}).then response => response.json()).then(responseData => {
+        if(responseData.hasOwnProperty('error')){
             alert(responseData.error);
         } else {
             document.getElementById("listDiv").style.display = 'block';
             document.getElementById("editDiv").style.display = 'none';
-            pageLoad();
         }
     });
 }
-function cancelEditFruit(event) {
+
+function cancelEditSaves(event){
     event.preventDefault();
+
     document.getElementById("listDiv").style.display = 'block';
     document.getElementById("editDiv").style.display = 'none';
 }
-function deleteFruit(event) {
-    const ok = confirm("Are you sure?");
-    if (ok === true) {
-        let id = event.target.getAttribute("data-id");
-        let formData = new FormData();
-        formData.append("id", id);
-        fetch('/fruit/delete', {method: 'post', body: formData}
-        ).then(response => response.json()
-        ).then(responseData => {
-                if (responseData.hasOwnProperty('error')) {
-                    alert(responseData.error);
-                } else {
-                    pageLoad();
-                }
-            }
-        );
-    }
+
+function deleteSaves(event){
+    const confirmation = confirm("Are you sure you want to delete this save?");
+
+    if (confirmation === true){
+        let id = event.target.getAttribute("data=id);
 }
