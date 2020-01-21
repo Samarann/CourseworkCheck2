@@ -1,7 +1,7 @@
 function pageLoad() {
 
     if(window.location.search === '?logout') {
-        document.getElementById('content').innerHTML = '<h1>Logging out, please wait...</h1>';
+        document.getElementById('content').innerHTML = '<h1>Logging out. Please wait...</h1>';
         logout();
     } else {
         document.getElementById("loginButton").addEventListener("click", login);
@@ -11,7 +11,7 @@ function pageLoad() {
 
 function login(event) {
     event.preventDefault();
-    const form = document.getElementById("loginForm");
+    const form = document.getElementById("Login");
     const formData = new FormData(form);
     fetch("/users/login", {method: 'post', body: formData}
     ).then(response => response.json()
@@ -21,7 +21,6 @@ function login(event) {
         } else {
             Cookies.set("username", responseData.username);
             Cookies.set("token", responseData.token);
-
             window.location.href = '/client/main.html';
         }
     });
@@ -34,7 +33,7 @@ function logout() {
         if (responseData.hasOwnProperty('error')) {
             alert(responseData.error);
         } else {
-            Cookies.remove("UserName");
+            Cookies.remove("username");
             Cookies.remove("token");
             window.location.href = '/client/main.html';
         }

@@ -1,4 +1,14 @@
 function pageLoad(){
+
+    let now = new Date();
+
+    let myHTML = '<div style="text-align:center;">' +
+        '<img src="/client/img/logo.png" alt="Logo"/>'+
+        '<div style="font-style:italic">' +
+        'Generated at ' + now.toLocaleTimeString() +
+        '</div>' +
+        '</div>' ;
+
     let savesHTML = '<table>' +
         '<tr>' +
         '<th>ID</th>' +
@@ -10,11 +20,11 @@ function pageLoad(){
 
             for(let read of saves){
                 savesHTML += `<tr>` +
-                    `<td>${saves.SaveID}</td>` +
-                    `<td>${saves.SaveName}</td>` +
+                    `<td>${saves.id}</td>` +
+                    `<td>${saves.name}</td>` +
                     `<td class="last">` +
-                    `<button class='editButton' data-id='${saves.SaveID}'>Edit</button>button` +
-                    `<button class='deleteButton' data-id='${saves.SaveID}'>Delete</button>button` +
+                    `<button class='editButton' data-id='${saves.id}'>Edit</button>button` +
+                    `<button class='deleteButton' data-id='${saves.id}'>Delete</button>button` +
                     `</td>`
                     `</tr>`;
             }
@@ -29,10 +39,9 @@ function pageLoad(){
             }
 
             let deleteButtons = document.getElementsByClassName("deleteButton");
-            for (let button of deletebuttons){
+            for (let button of deleteButtons){
                 button.addEventListener("click", deleteSaves)
             }
-
             checkLogin();
     });
 
@@ -118,41 +127,29 @@ function deleteSaves(event){
 }
 
 function checkLogin() {
-
     let username = Cookies.get("username");
-
     let logInHTML = '';
-
     if (username === undefined) {
-
         let editButtons = document.getElementsByClassName("editButton");
         for (let button of editButtons) {
             button.style.visibility = "hidden";
         }
-
         let deleteButtons = document.getElementsByClassName("deleteButton");
         for (let button of deleteButtons) {
             button.style.visibility = "hidden";
         }
-
         logInHTML = "Not logged in. <a href='/client/login.html'>Log in</a>";
     } else {
-
         let editButtons = document.getElementsByClassName("editButton");
         for (let button of editButtons) {
             button.style.visibility = "visible";
         }
-
         let deleteButtons = document.getElementsByClassName("deleteButton");
         for (let button of deleteButtons) {
             button.style.visibility = "visible";
         }
-
         logInHTML = "Logged in as " + username + ". <a href='/client/login.html?logout'>Log out</a>";
-
     }
-
     document.getElementById("loggedInDetails").innerHTML = logInHTML;
-
 }
 

@@ -150,26 +150,23 @@ public class Users{
     @Path("login")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public String loginUser(@FormDataParam("UserName") String UserName, @FormDataParam("UserPass") String UserPass, @CookieParam("token") String token) {
+    public String loginUser(@FormDataParam("UserName") String username, @FormDataParam("UserPass") String password) {
         System.out.println("users/login");
-        if(!Users.validToken(token)){
-            return "{\"error\": \"You are not logged in.\"}";
-        }
         try {
-
-            PreparedStatement ps1 = Main.db.prepareStatement("SELECT Password FROM Users WHERE Username = ?");
-            ps1.setString(1, UserName);
+            PreparedStatement ps1 = Main.db.prepareStatement("SELECT UserPass FROM Users WHERE UserName = ?");
+            ps1.setString(1, username);
             ResultSet loginResults = ps1.executeQuery();
             if (loginResults.next()) {
                 String correctPassword = loginResults.getString(1);
-                if (UserPass.equals(correctPassword)) {
-                    token = UUID.randomUUID().toString();
-                    PreparedStatement ps2 = Main.db.prepareStatement("UPDATE Users SET Token = ? WHERE Username = ?");
+                System.out.println(correctPassword);
+                if (password.equals(correctPassword)) {
+                    String token = UUID.randomUUID().toString();
+                    PreparedStatement ps2 = Main.db.prepareStatement("UPDATE Users SET Token = ? WHERE UserName = ?");
                     ps2.setString(1, token);
-                    ps2.setString(2, UserName);
+                    ps2.setString(2, username);
                     ps2.executeUpdate();
                     JSONObject userDetails = new JSONObject();
-                    userDetails.put("UserName", UserName);
+                    userDetails.put("username", username);
                     userDetails.put("token", token);
                     return userDetails.toString();
                 } else {
@@ -180,7 +177,7 @@ public class Users{
             }
         } catch (Exception exception){
             System.out.println("Database error during /user/login: " + exception.getMessage());
-            return "{\"error\": \"Server side error!\"}";
+            return "{\"error\": \"Server side error.\"}";
         }
     }
 

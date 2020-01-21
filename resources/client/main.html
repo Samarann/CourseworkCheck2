@@ -3,7 +3,8 @@
     <head>
         <base href="/">
         <title>Main Page</title>
-        <link rel="stylesheet" type="text/css" href="/client/css/styles.css" />
+        <link rel="stylesheet" type="text/css" href="/client/css/styles.css"/>
+        <script src="/client/js/js.cookie.js"></script>
         <script src="/client/js/main.js"></script>
         <!-- <link rel="shortcut icon" href="/client/favicon.ico" type="image/x-icon"> -->
     </head>
@@ -12,11 +13,11 @@
 
     <ul>
         <li><a>Username</a></li>
-        <li><a href="client/login.html">Log In</a></li>
-        <li><a href="#LogOut">Log Out</a></li>
+        <li><a href="/client/login.html">Log In</a></li>
+        <li><a href="/client/login.html">Log Out</a></li>
         <li><a href="#Register">Register</a></li>
     </ul>
-
+    <hr />
 
     <div id="content">
 
@@ -27,19 +28,15 @@
 
         <div id="editDiv">
             <h2 id="editHeading"></h2>
-            <form id="fruitForm">
-                <input type="hidden" name="id" id="fruitId">
+            <form id="saveForm">
+                <input type="hidden" name="id" id="saveId">
                 <div>
-                    <label for="fruitName" class="label">Name:</label>
-                    <input type="text" name="name" id="fruitName">
+                    <label for="saveName" class="label">Name:</label>
+                    <input type="text" name="name" id="saveName">
                 </div>
                 <div>
-                    <label for="fruitImage" class="label">Image:</label>
-                    <input type="text" name="image" id="fruitImage">
-                </div>
-                <div>
-                    <label for="fruitColour" class="label">Colour:</label>
-                    <input type="text" name="colour" id="fruitColour">
+                    <input type="submit" name="save" id="saveButton">
+                    <input type="submit" name="cancel" id="cancelButton">
                 </div>
             </form>
         </div>
