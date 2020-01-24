@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="uk" xmlns="http://www.w3.org/1999/html">
     <head>
         <base href="/">
         <title>Main Page</title>
@@ -15,33 +15,31 @@
         <li><a>Username</a></li>
         <li><a href="/client/login.html">Log In</a></li>
         <li><a href="/client/login.html">Log Out</a></li>
-        <li><a href="#Register">Register</a></li>
+        <li><a href="/client/register.html">Register</a></li>
     </ul>
     <hr />
 
     <div id="content">
-
         <div id="pageHeader">
-                <div class="floatRight"><button id="searchSavesButton" class="Button">Search All Visible Saves</button></div>
             <h1>e pp</h1>
         </div>
 
-        <div id="editDiv">
+        <div id="listDiv">
             <h2 id="editHeading"></h2>
             <form id="saveForm">
                 <input type="hidden" name="id" id="saveId">
                 <div>
-                    <label for="saveName" class="label">Name:</label>
-                    <input type="text" name="name" id="saveName">
+                    <label for="Savename" class="label">Name:</label>
+                    <input type="text" name="Savedata" id="Savedata">
                 </div>
                 <div>
                     <input type="submit" name="save" id="saveButton">
-                    <input type="submit" name="cancel" id="cancelButton">
                 </div>
             </form>
         </div>
 
+        <div class="floatRight"><button id="searchSavesButton" class="Button">Search All Visible Saves</button></div>
+
     </div>
     </body>
-
 </html>

@@ -46,7 +46,7 @@ public class Users{
     @Path("create/")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces(MediaType.APPLICATION_JSON)
-    public static String createUsers(@FormDataParam("UserIDAdd") Integer UserIDAdd, @FormDataParam("UserEmailAdd") String UserEmailAdd, @FormDataParam("UserNameAdd") String UserNameAdd, @FormDataParam("UserPassAdd") String UserPassAdd, @CookieParam("token") String token){
+    public static String createUsers(@FormDataParam("UserID") Integer UserIDAdd, @FormDataParam("UserEmail") String UserEmailAdd, @FormDataParam("UserName") String UserNameAdd, @FormDataParam("UserPass") String UserPassAdd, @CookieParam("token") String token){
         System.out.println("users/create/");
         if(!Users.validToken(token)){
             return "{\"error\": \"You are not logged in.\"}";

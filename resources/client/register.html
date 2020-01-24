@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+        <base href="/">
+        <title>Register/Edit</title>
+        <link rel="stylesheet" type="text/css" href="/client/css/styles.css"/>
+        <script src="/client/js/js.cookie.js"></script>
+        <script src="/client/js/register.js"></script>
+        <script src="js/register.js"></script>
+        <!-- <link rel="shortcut icon" href="/client/favicon.ico" type="image/x-icon"> -->
+    </head>
+    <body onload="pageLoad()">
+    <div id="content">
+        <h1>Register</h1>
+        <img src="/client/img/logo.png">
+        <hr/>
+        <form id="registerForm">
+            <div class="registerDiv">
+                <label for="Userid">ID: </label>
+                <input type="text" name="Userid" id="Userid">
+            </div>
+            <div class="registerDiv">
+                <label for="Username">Username: </label>
+                <input type="text" name="Username" id="Username">
+            </div>
+            <div class="registerDiv">
+                <label for="Useremail">Email: </label>
+                <input type="text" name="Useremail" id="Useremail">
+            </div>
+            <div class="registerDiv">
+                <label for="Userpass">Password: </label>
+                <input type="password" name="Userpass" id="Userpass">
+            </div>
+            <div class="registerButton">
+                <input type="submit" value="Register" id="registerButton">
+            </div>
+        </form>
+    </div>
+    </body>
+</html>
