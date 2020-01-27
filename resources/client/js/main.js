@@ -1,18 +1,9 @@
 function pageLoad(){
 
-    let now = new Date();
-
-    let myHTML = '<div style="text-align:center;">' +
-        '<img src="/client/img/logo.png" alt="Logo"/>'+
-        '<div style="font-style:italic">' +
-        'Generated at ' + now.toLocaleTimeString() +
-        '</div>' +
-        '</div>' ;
-
     let savesHTML = '<table>' +
         '<tr>' +
-        '<th>ID</th>' +
         '<th>Save Name</th>' +
+        '<th>Save Data</th>' +
         '<th class="last">Options</th>' +
         '</tr>'
 
@@ -20,11 +11,11 @@ function pageLoad(){
 
             for(let read of saves){
                 savesHTML += `<tr>` +
-                    `<td>${saves.id}</td>` +
-                    `<td>${saves.name}</td>` +
+                    `<td>${read.name}</td>` +
+                    `<td>${read.data}</td>` +
                     `<td class="last">` +
-                    `<button class='editButton' data-id='${saves.id}'>Edit</button>button` +
-                    `<button class='deleteButton' data-id='${saves.id}'>Delete</button>button` +
+                    `<button class='editButton' data-id='${read.id}'>Edit</button>button` +
+                    `<button class='deleteButton' data-id='${read.id}'>Delete</button>button` +
                     `</td>`
                     `</tr>`;
             }
@@ -53,7 +44,7 @@ function editSaves(event){
     const id = event.target.getAttribute("data-id");
 
     if(id === null){
-        document.getElementById("editHeading").innerHTML = 'Add new fruit:';
+        document.getElementById("editHeading").innerHTML = 'Add new save:';
 
         document.getElementById("SaveID").value = '';
         document.getElementById("SaveName").value = '';
@@ -61,14 +52,14 @@ function editSaves(event){
         document.getElementById("listDiv").style.display = 'none';
         document.getElementById("editDiv").style.display = 'block';
     } else {
-        fetch('saves/read/' + id, {method: 'get'}).then(response => response.json()).then(fruit =>{
+        fetch('saves/read/' + id, {method: 'get'}).then(response => response.json()).then(saves =>{
             if(saves.hasOwnProperty('error')){
-                alert(save.error);
+                alert(saves.error);
             } else {
-                document.getElementById("editHeading").innerHTML = 'Editing ' + save.SaveName + ':';
+                document.getElementById("editHeading").innerHTML = 'Editing ' + saves.name + ':';
 
                 document.getElementById("SaveID").value = id;
-                document.getElementById("SaveName").value = save.SaveName;
+                document.getElementById("SaveName").value = saves.name;
 
                 document.getElementById("listDiv").style.display = 'none';
                 document.getElementById("editDiv").style.display = 'block';
@@ -80,13 +71,13 @@ function editSaves(event){
 function saveEditSaves(event){
     event.preventDefault();
 
-    if(document.getElementById("SaveName").value.trim() === ''){
+    if(document.getElementById("name").value.trim() === ''){
         alert("Please provide a save name.");
         return;
     }
 
-    if(document.getElementById("SaveOwner").value.trim() === ''){
-        alert("Please provide a save name.");
+    if(document.getElementById("data").value.trim() === ''){
+        alert("Please provide a save data.");
         return;
     }
 
@@ -123,6 +114,16 @@ function deleteSaves(event){
 
     if (confirmation === true){
         let id = event.target.getAttribute("data=id");
+        let formData = new FormData();
+        formData.apped("id", id);
+
+        fetch('/saves/delete', {method: 'post', body: formData}).then(response => response.json()).then(responseData => {
+            if (responseData.hasOwnProperty('error')) {
+                alert(responseData.error);
+            } else {
+                pageLoad();
+            }
+        });
     }
 }
 

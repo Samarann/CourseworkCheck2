@@ -59,3 +59,7 @@ ul {
     visibility: hidden;
     background-color: silver;
 }
+
+table{
+    width: 100%;
+}
