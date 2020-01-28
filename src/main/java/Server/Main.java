@@ -7,16 +7,8 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.sqlite.SQLiteConfig;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Scanner;
 
 public class Main {
 
@@ -41,10 +33,6 @@ public class Main {
             server.join();
         } catch (Exception e) {
             e.printStackTrace();
-
-            //Controllers.Users.readUsers();
-            //Controllers.Users.createUsers(8, "imauser@createduser.com", "CreatedUser", "1m4n3wus3r");
-            //Controllers.Users.readUsers();
         }
     }
 

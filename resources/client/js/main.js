@@ -113,9 +113,9 @@ function deleteSaves(event){
     const confirmation = confirm("Are you sure you want to delete this save?");
 
     if (confirmation === true){
-        let id = event.target.getAttribute("data=id");
+        let id = event.target.getAttribute("data-id");
         let formData = new FormData();
-        formData.apped("id", id);
+        formData.append("id", id);
 
         fetch('/saves/delete', {method: 'post', body: formData}).then(response => response.json()).then(responseData => {
             if (responseData.hasOwnProperty('error')) {
